@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UNO Numbers Chain</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <header class="app-bar">
+      <div>
+        <p class="eyebrow">AI-Native Development Challenge</p>
+        <h1>UNO Numbers Chain</h1>
+      </div>
+      <div class="turn-pill" id="turnStatus" aria-live="polite">Ready</div>
+    </header>
+
+    <main class="game-shell">
+      <section class="setup-strip" aria-label="Game setup">
+        <div class="control-group">
+          <span class="control-label">Players</span>
+          <div class="segmented" id="playerCountOptions">
+            <button class="segment is-active" type="button" data-player-count="2">2</button>
+            <button class="segment" type="button" data-player-count="3">3</button>
+            <button class="segment" type="button" data-player-count="4">4</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <span class="control-label">Humans</span>
+          <div class="segmented" id="humanCountOptions"></div>
+        </div>
+
+        <button class="primary-button" id="newGameButton" type="button">New game</button>
+        <button class="primary-button play-button" id="playTurnButton" type="button">Auto-play turn</button>
+      </section>
+
+      <section class="table-layout">
+        <aside class="pile-panel" aria-label="Piles and current card">
+          <div class="pile-row">
+            <button class="pile-card face-down-card" id="drawPileButton" type="button">
+              <span>UNO</span>
+              <small id="drawCount">0</small>
+            </button>
+            <div>
+              <h2>Draw pile</h2>
+              <p id="drawPileText">0 cards</p>
+            </div>
+          </div>
+
+          <div class="pile-row">
+            <button class="pile-card" id="discardPreview" type="button">
+              <span>-</span>
+              <small>0</small>
+            </button>
+            <div>
+              <h2>Discard pile</h2>
+              <p id="discardPileText">0 cards</p>
+            </div>
+          </div>
+
+          <div class="current-card" id="currentCardPanel">
+            <span class="control-label">Card in play</span>
+            <div class="active-card-display" id="activeCardDisplay">
+              <span class="active-card-empty">None</span>
+            </div>
+            <strong id="activeCardText">No card selected</strong>
+            <p id="stepInstruction">Click the draw pile to start your turn.</p>
+          </div>
+        </aside>
+
+        <section class="boards-area" id="boardsArea" aria-label="Player boards"></section>
+
+        <aside class="log-panel" aria-label="Turn log">
+          <h2>Turn log</h2>
+          <ol id="turnLog"></ol>
+        </aside>
+      </section>
+
+      <section class="rules-section" aria-labelledby="rulesTitle">
+        <header class="rules-header">
+          <div>
+            <p class="eyebrow">How to play</p>
+            <h2 id="rulesTitle">Game Rules</h2>
+          </div>
+          <div class="segmented rules-language" role="tablist" aria-label="Rules language">
+            <button
+              class="segment is-active"
+              id="rulesTabEn"
+              type="button"
+              role="tab"
+              aria-controls="rulesPanelEn"
+              aria-selected="true"
+              data-rules-language="en"
+            >
+              EN
+            </button>
+            <button
+              class="segment"
+              id="rulesTabRu"
+              type="button"
+              role="tab"
+              aria-controls="rulesPanelRu"
+              aria-selected="false"
+              data-rules-language="ru"
+            >
+              RU
+            </button>
+          </div>
+        </header>
+
+        <article
+          class="rules-panel"
+          id="rulesPanelRu"
+          role="tabpanel"
+          aria-labelledby="rulesTabRu"
+          data-rules-panel="ru"
+          hidden
+        >
+          <div class="rules-grid">
+            <section>
+              <h3>Цель игры</h3>
+              <p>Первым открыть все свои карты с номерами от <strong>0 до 9</strong>.</p>
+            </section>
+
+            <section>
+              <h3>Количество игроков</h3>
+              <p><strong>2-4 игрока</strong></p>
+            </section>
+
+            <section>
+              <h3>Комплектация</h3>
+              <ul>
+                <li>Колода UNO, используются <strong>только карты с цифрами (0-9)</strong>.</li>
+                <li>Карты действий ("Пропуск хода", "Реверс", "+2", "Wild" и т.д.) в игре не используются.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3>Подготовка к игре</h3>
+              <ol>
+                <li>Тщательно перемешайте колоду.</li>
+                <li>Каждому игроку раздайте <strong>10 карт</strong>.</li>
+                <li>Игроки выкладывают свои карты <strong>рубашкой вверх</strong>, не подсматривая их, в два ряда по пять карт.</li>
+                <li>Оставшаяся колода кладется в центр стола лицевой стороной вниз.</li>
+              </ol>
+              <p>Пока все карты остаются закрытыми.</p>
+
+              <div class="rules-layout-example" aria-label="Расположение карт">
+                <p>Верхний ряд</p>
+                <div>
+                  <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span>
+                </div>
+                <p>Нижний ряд</p>
+                <div>
+                  <span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="rules-wide">
+              <h3>Ход игры</h3>
+              <p>В свой ход игрок выполняет следующие действия:</p>
+              <ol>
+                <li>Берет верхнюю карту из колоды.</li>
+                <li>Смотрит ее значение.</li>
+                <li>
+                  Кладет эту карту на соответствующую позицию в своей раскладке:
+                  <ul>
+                    <li>карта 0 на место 0;</li>
+                    <li>карта 1 на место 1;</li>
+                    <li>...</li>
+                    <li>карта 9 на место 9.</li>
+                  </ul>
+                </li>
+                <li>Карта, которая лежала на этом месте, открывается и берется в руку.</li>
+                <li>
+                  Если номер новой карты еще не открыт, игрок продолжает выполнять те же действия:
+                  <ul>
+                    <li>кладет карту на соответствующее место;</li>
+                    <li>берет карту, лежавшую там;</li>
+                    <li>повторяет процесс.</li>
+                  </ul>
+                </li>
+              </ol>
+              <p>Цепочка продолжается до тех пор, пока игрок не возьмет карту, номер которой уже открыт в его раскладке.</p>
+              <p>В этом случае карта сбрасывается в стопку сброса, а ход немедленно переходит следующему игроку.</p>
+            </section>
+
+            <section>
+              <h3>Пример хода</h3>
+              <p>Игрок берет карту из колоды. Выпадает <strong>2</strong>, и он кладет ее на позицию <strong>2</strong>.</p>
+              <p>На этом месте лежала закрытая карта <strong>5</strong>. Игрок берет карту <strong>5</strong> и кладет ее на позицию <strong>5</strong>.</p>
+              <p>На позиции <strong>5</strong> оказывается карта <strong>2</strong>. Поскольку карта с номером <strong>2</strong> уже находится на своем месте и открыта, новая карта <strong>2</strong> отправляется в сброс. Ход заканчивается.</p>
+            </section>
+
+            <section>
+              <h3>Победа</h3>
+              <p>Побеждает игрок, который первым откроет все десять своих карт: от <strong>0</strong> до <strong>9</strong>.</p>
+            </section>
+          </div>
+        </article>
+
+        <article
+          class="rules-panel"
+          id="rulesPanelEn"
+          role="tabpanel"
+          aria-labelledby="rulesTabEn"
+          data-rules-panel="en"
+        >
+          <div class="rules-grid">
+            <section>
+              <h3>Objective</h3>
+              <p>Be the first player to reveal all ten numbered cards (<strong>0-9</strong>) in your layout.</p>
+            </section>
+
+            <section>
+              <h3>Players</h3>
+              <p><strong>2-4 players</strong></p>
+            </section>
+
+            <section>
+              <h3>Components</h3>
+              <ul>
+                <li>A standard UNO deck.</li>
+                <li><strong>Only the numbered cards (0-9) are used.</strong></li>
+                <li>All action and Wild cards are removed before the game begins.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3>Setup</h3>
+              <ol>
+                <li>Shuffle the numbered cards thoroughly.</li>
+                <li>Deal <strong>10 cards</strong> to each player.</li>
+                <li>Without looking at them, each player places their cards <strong>face down</strong> in two rows of five cards.</li>
+                <li>Place the remaining deck face down in the center of the table.</li>
+              </ol>
+
+              <div class="rules-layout-example" aria-label="Card layout">
+                <p>Top row</p>
+                <div>
+                  <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span>
+                </div>
+                <p>Bottom row</p>
+                <div>
+                  <span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="rules-wide">
+              <h3>Gameplay</h3>
+              <p>On a player's turn, the player does the following:</p>
+              <ol>
+                <li>Draw the top card from the deck.</li>
+                <li>Look at its number.</li>
+                <li>Place it onto the matching numbered position in your layout.</li>
+                <li>Pick up the card that was previously in that position.</li>
+                <li>
+                  If the newly picked-up card belongs to a position that has not yet been revealed, repeat the process:
+                  <ul>
+                    <li>place it onto its matching position;</li>
+                    <li>pick up the replaced card;</li>
+                    <li>continue.</li>
+                  </ul>
+                </li>
+              </ol>
+              <p>The chain continues until the player picks up a card whose matching position has already been revealed.</p>
+              <p>When this happens, discard that card into the discard pile and the player's turn immediately ends.</p>
+            </section>
+
+            <section>
+              <h3>Example</h3>
+              <p>A player draws a <strong>2</strong> and places it on position <strong>2</strong>.</p>
+              <p>The replaced card is a <strong>5</strong>. They place the <strong>5</strong> on position <strong>5</strong>.</p>
+              <p>The replaced card is another <strong>2</strong>. Since position <strong>2</strong> has already been revealed, this second <strong>2</strong> is discarded, ending the player's turn.</p>
+            </section>
+
+            <section>
+              <h3>Winning the Game</h3>
+              <p>The first player to reveal all ten numbered positions (<strong>0-9</strong>) wins the game.</p>
+            </section>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <div class="winner-overlay" id="winnerOverlay" hidden>
+      <div class="winner-dialog" role="dialog" aria-modal="true" aria-labelledby="winnerTitle">
+        <p class="eyebrow">Game complete</p>
+        <h2 id="winnerTitle">Winner</h2>
+        <button class="primary-button" id="winnerNewGameButton" type="button">Play again</button>
+      </div>
+    </div>
+
+    <script type="module" src="src/app.js"></script>
+  </body>
+</html>

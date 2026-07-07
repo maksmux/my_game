@@ -1,0 +1,23 @@
+stages:
+  - test
+  - deploy
+
+test:
+  image: node:22-alpine
+  stage: test
+  script:
+    - npm test
+
+pages:
+  image: alpine:3.20
+  stage: deploy
+  script:
+    - mkdir public
+    - cp index.html public/
+    - cp -r src public/
+    - cp README.md SPEC.md ARCHITECTURE.md RETROSPECTIVE.md public/
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

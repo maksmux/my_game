@@ -1,0 +1,19 @@
+{
+  "name": "maksim-andreichev-project",
+  "version": "1.0.0",
+  "description": "A static browser card game based on UNO numbered cards.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "test": "node tests/game.test.mjs"
+  },
+  "keywords": [
+    "card-game",
+    "uno",
+    "browser-game",
+    "ai-native-development"
+  ],
+  "author": "Maksim Andreichev",
+  "license": "MIT"
+}
