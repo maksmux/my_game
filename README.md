@@ -4,7 +4,7 @@ A small browser card game built for the AI-Native Development Challenge. It uses
 
 ## Play
 
-- GitLab Pages: {link} after the Pages pipeline runs.
+- GitLab Pages: https://maksmux.github.io/my_game/ after the Pages pipeline runs.
 - Local file: open `index.html` in a browser.
 - Local server:
 
@@ -23,7 +23,7 @@ To publish or update the hosted version:
 1. Push changes to the default branch.
 2. Keep a GitLab Runner online for the project.
 3. Wait for the `test` and `pages` jobs to pass.
-4. Open {link}.
+4. Open [link](https://maksmux.github.io/my_game/).
 
 ## Game Description
 
